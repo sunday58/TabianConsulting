@@ -147,6 +147,10 @@ public class LoginActivity extends AppCompatActivity {
                         Log.d(TAG, "onAuthStateChanged: signed_in" + user.getUid());
                         Toast.makeText(LoginActivity.this, "Authenticated with"
                                 + user.getEmail(), Toast.LENGTH_SHORT).show();
+                        Intent intent = new Intent(LoginActivity.this, SignedInActivity.class);
+                        startActivity(intent);
+                        finish();
+
                     }else {
                         Toast.makeText(LoginActivity.this, "Check your Email Inbox" +
                                 " for a Link", Toast.LENGTH_SHORT).show();

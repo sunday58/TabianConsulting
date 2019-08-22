@@ -9,7 +9,9 @@
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
-        <activity android:name=".SignedInActivity"></activity>
+        <activity android:name=".PasswordResetDialog"></activity>
+        <activity android:name=".settings.SettingsActivity" />
+        <activity android:name=".SignedInActivity" />
         <activity android:name=".ResendVerificationDialog" />
         <activity android:name=".RegisterActivity" />
         <activity android:name=".LoginActivity">
