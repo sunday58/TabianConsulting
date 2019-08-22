@@ -15,7 +15,11 @@ import androidx.annotation.Nullable;
 import androidx.fragment.app.DialogFragment;
 
 import com.google.android.gms.tasks.OnCompleteListener;
+import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.Task;
+import com.google.firebase.auth.AuthCredential;
+import com.google.firebase.auth.AuthResult;
+import com.google.firebase.auth.EmailAuthProvider;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 
@@ -33,12 +37,12 @@ public class ResendVerificationDialog extends DialogFragment {
     @Override
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.activity_resend_verification_dialog, container, false);
-        mConfirmPassword = (EditText) view.findViewById(R.id.confirm_password);
-        mConfirmEmail = (EditText) view.findViewById(R.id.confirm_email);
+        mConfirmPassword = view.findViewById(R.id.confirm_password);
+        mConfirmEmail = view.findViewById(R.id.confirm_email);
         mContext = getActivity();
 
 
-        TextView confirmDialog = (TextView) view.findViewById(R.id.dialogConfirm);
+        TextView confirmDialog = view.findViewById(R.id.dialogConfirm);
         confirmDialog.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -47,6 +51,8 @@ public class ResendVerificationDialog extends DialogFragment {
                 if(!isEmpty(mConfirmEmail.getText().toString())
                         && !isEmpty(mConfirmPassword.getText().toString())){
 
+                    authenticateAndResendEmail(mConfirmEmail.getText().toString(),
+                            mConfirmPassword.getText().toString());
 
                 }else{
                     Toast.makeText(mContext, "all fields must be filled out", Toast.LENGTH_SHORT).show();
@@ -57,7 +63,7 @@ public class ResendVerificationDialog extends DialogFragment {
         });
 
         // Cancel button for closing the dialog
-        TextView cancelDialog = (TextView) view.findViewById(R.id.dialogCancel);
+        TextView cancelDialog = view.findViewById(R.id.dialogCancel);
         cancelDialog.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -66,6 +72,30 @@ public class ResendVerificationDialog extends DialogFragment {
         });
 
         return view;
+    }
+
+    private void authenticateAndResendEmail(String email, String password){
+        AuthCredential credential = EmailAuthProvider.getCredential(
+                email, password);
+        FirebaseAuth.getInstance().signInWithCredential(credential)
+                .addOnCompleteListener(new OnCompleteListener<AuthResult>() {
+                    @Override
+                    public void onComplete(@NonNull Task<AuthResult> task) {
+                        if (task.isSuccessful()){
+                            Log.d(TAG, "onComplete: reauthenticate success");
+                            sendVerificationEmail();
+                            FirebaseAuth.getInstance().signOut();
+                            getDialog().dismiss();
+                        }
+                    }
+                }).addOnFailureListener(new OnFailureListener() {
+            @Override
+            public void onFailure(@NonNull Exception e) {
+                Toast.makeText(mContext, "Invalid Credentials \nReset password and try again",
+                        Toast.LENGTH_SHORT).show();
+                getDialog().dismiss();
+            }
+        });
     }
 
 
