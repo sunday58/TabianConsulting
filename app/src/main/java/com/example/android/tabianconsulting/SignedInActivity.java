@@ -11,6 +11,7 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 
+import com.example.android.tabianconsulting.settings.SettingsActivity;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.FirebaseAuth;
@@ -118,6 +119,10 @@ public class SignedInActivity extends AppCompatActivity {
         switch (item.getItemId()){
             case R.id.optionSignOut:
                 signOut();
+                return true;
+            case R.id.optionAccountSettings:
+                Intent intent = new Intent(SignedInActivity.this, SettingsActivity.class);
+                startActivity(intent);
                 return true;
             default:
                 return super.onOptionsItemSelected(item);
