@@ -51,7 +51,6 @@
     <string name="dialog_new_chatroom">NewChatroomDialog</string>
 
 
-
     <!-- Firebase Database Nodes -->
     <string name="dbnode_users">users</string>
     <string name="dbnode_chatrooms">chatrooms</string>

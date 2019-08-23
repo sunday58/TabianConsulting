@@ -31,6 +31,9 @@ dependencies {
     implementation 'com.google.firebase:firebase-auth:19.0.0'
     implementation 'com.google.firebase:firebase-database:19.0.0'
     implementation 'com.google.firebase:firebase-storage:19.0.0'
+
+    //Universal Image Loader
+    implementation 'com.nostra13.universalimageloader:universal-image-loader:1.9.5'
 }
 
 apply plugin: 'com.google.gms.google-services'

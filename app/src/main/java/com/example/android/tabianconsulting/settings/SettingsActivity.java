@@ -17,6 +17,7 @@ import androidx.appcompat.app.AppCompatActivity;
 
 import com.example.android.tabianconsulting.LoginActivity;
 import com.example.android.tabianconsulting.R;
+import com.example.android.tabianconsulting.models.User;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.Task;
@@ -25,6 +26,12 @@ import com.google.firebase.auth.EmailAuthProvider;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.auth.SignInMethodQueryResult;
+import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.database.DatabaseError;
+import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.Query;
+import com.google.firebase.database.ValueEventListener;
 
 
 public class SettingsActivity extends AppCompatActivity {
@@ -38,7 +45,7 @@ public class SettingsActivity extends AppCompatActivity {
     private FirebaseAuth.AuthStateListener mAuthListener;
 
     //widgets
-    private EditText mEmail, mCurrentPassword;
+    private EditText mEmail, mCurrentPassword, mName, mPhone;
     private Button mSave;
     private ProgressBar mProgressBar;
     private TextView mResetPasswordLink;
@@ -48,15 +55,18 @@ public class SettingsActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_settings);
         Log.d(TAG, "onCreate: started.");
-        mEmail = (EditText) findViewById(R.id.input_email);
-        mCurrentPassword = (EditText) findViewById(R.id.input_password);
-        mSave= (Button) findViewById(R.id.btn_save);
-        mProgressBar = (ProgressBar) findViewById(R.id.progressBar);
-        mResetPasswordLink = (TextView) findViewById(R.id.change_password);
+        mEmail =  findViewById(R.id.input_email);
+        mCurrentPassword = findViewById(R.id.input_password);
+        mSave= findViewById(R.id.btn_save);
+        mProgressBar = findViewById(R.id.progressBar);
+        mResetPasswordLink = findViewById(R.id.change_password);
+        mName = findViewById(R.id.input_name);
+        mPhone = findViewById(R.id.input_phone);
 
         setupFirebaseAuth();
 
         setCurrentEmail();
+        getUsersAccountData();
 
         mSave.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -79,17 +89,42 @@ public class SettingsActivity extends AppCompatActivity {
                         if(isValidDomain(mEmail.getText().toString())){
                             editUserEmail();
                         }else{
-                            Toast.makeText(SettingsActivity.this, "Invalid Domain", Toast.LENGTH_SHORT).show();
+                            Toast.makeText(SettingsActivity.this, "Invalid Domain",
+                                    Toast.LENGTH_SHORT).show();
                         }
 
                     }else{
-                        Toast.makeText(SettingsActivity.this, "no changes were made", Toast.LENGTH_SHORT).show();
+                        Toast.makeText(SettingsActivity.this, "Changes Saved",
+                                Toast.LENGTH_SHORT).show();
                     }
 
 
                 }else{
-                    Toast.makeText(SettingsActivity.this, "Email and Current Password Fields Must be Filled to Save", Toast.LENGTH_SHORT).show();
+                    Toast.makeText(SettingsActivity.this, "Email and Current Password " +
+                            "Fields Must be Filled to Save", Toast.LENGTH_SHORT).show();
                 }
+
+                DatabaseReference reference = FirebaseDatabase.getInstance().getReference();
+                /*
+                -----Change Name------
+                 */
+                if (!mName.getText().toString().equals("")){
+                    reference.child(getString(R.string.dbnode_users))
+                            .child(FirebaseAuth.getInstance().getCurrentUser().getUid())
+                            .child(getString(R.string.field_name))
+                            .setValue(mName.getText().toString());
+                }
+
+                /*
+                    ------Change Phone Number-------
+                 */
+                if (!mPhone.getText().toString().equals("")){
+                    reference.child(getString(R.string.dbnode_users))
+                            .child(FirebaseAuth.getInstance().getCurrentUser().getUid())
+                            .child(getString(R.string.field_phone))
+                            .setValue(mPhone.getText().toString());
+                }
+
             }
         });
 
@@ -108,6 +143,38 @@ public class SettingsActivity extends AppCompatActivity {
 
 
         hideSoftKeyboard();
+    }
+    // get reference to firebase database to retrieve data
+    private void getUsersAccountData(){
+        Log.d(TAG, "getUsersAccountData: geting the users account information");
+
+        DatabaseReference reference = FirebaseDatabase.getInstance().getReference();
+
+        /*
+        -------Query Method 1--------
+         */
+        Query query1 = reference.child(getString(R.string.dbnode_users))
+                .orderByKey()
+                .equalTo(FirebaseAuth.getInstance().getCurrentUser().getUid());
+        query1.addListenerForSingleValueEvent(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                for (DataSnapshot singleSnapshot: dataSnapshot.getChildren()){
+                    User user = singleSnapshot.getValue(User.class);
+                    Log.d(TAG, "onDataChange: Query Method 1 found user: " + user.toString());
+
+                    mName.setText(user.getName());
+                    mPhone.setText(user.getPhone());
+
+                }
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError databaseError) {
+
+            }
+        });
+        mEmail.setText(FirebaseAuth.getInstance().getCurrentUser().getEmail());
     }
 
     private void sendResetPasswordLink(){
@@ -138,8 +205,10 @@ public class SettingsActivity extends AppCompatActivity {
         showDialog();
 
         AuthCredential credential = EmailAuthProvider
-                .getCredential(FirebaseAuth.getInstance().getCurrentUser().getEmail(), mCurrentPassword.getText().toString());
-        Log.d(TAG, "editUserEmail: reauthenticating with:  \n email " + FirebaseAuth.getInstance().getCurrentUser().getEmail()
+                .getCredential(FirebaseAuth.getInstance().getCurrentUser().getEmail(),
+                        mCurrentPassword.getText().toString());
+        Log.d(TAG, "editUserEmail: reauthenticating with:  \n email " + FirebaseAuth.getInstance()
+                .getCurrentUser().getEmail()
                 + " \n passowrd: " + mCurrentPassword.getText().toString());
 
 
@@ -154,7 +223,8 @@ public class SettingsActivity extends AppCompatActivity {
                             if(isValidDomain(mEmail.getText().toString())){
 
                                 ///////////////////now check to see if the email is not already present in the database
-                                FirebaseAuth.getInstance().fetchSignInMethodsForEmail(mEmail.getText().toString()).addOnCompleteListener(
+                                FirebaseAuth.getInstance().fetchSignInMethodsForEmail(mEmail.getText()
+                                        .toString()).addOnCompleteListener(
                                         new OnCompleteListener<SignInMethodQueryResult>() {
                                             @Override
                                             public void onComplete(@NonNull Task<SignInMethodQueryResult> task) {
@@ -162,23 +232,30 @@ public class SettingsActivity extends AppCompatActivity {
                                                 if(task.isSuccessful()){
                                                     ///////// getProviders().size() will return size 1 if email ID is in use.
 
-                                                    Log.d(TAG, "onComplete: RESULT: " + task.getResult().getSignInMethods().size());
+                                                    Log.d(TAG, "onComplete: RESULT: " + task
+                                                            .getResult().getSignInMethods().size());
                                                     if(task.getResult().getSignInMethods().size() == 1){
-                                                        Log.d(TAG, "onComplete: That email is already in use.");
+                                                        Log.d(TAG, "onComplete: That email is" +
+                                                                " already in use.");
                                                         hideDialog();
-                                                        Toast.makeText(SettingsActivity.this, "That email is already in use", Toast.LENGTH_SHORT).show();
+                                                        Toast.makeText(SettingsActivity.this,
+                                                                "That email is already in use",
+                                                                Toast.LENGTH_SHORT).show();
 
                                                     }else{
                                                         Log.d(TAG, "onComplete: That email is available.");
 
                                                         /////////////////////add new email
-                                                        FirebaseAuth.getInstance().getCurrentUser().updateEmail(mEmail.getText().toString())
+                                                        FirebaseAuth.getInstance().getCurrentUser().
+                                                                updateEmail(mEmail.getText().toString())
                                                                 .addOnCompleteListener(new OnCompleteListener<Void>() {
                                                                     @Override
                                                                     public void onComplete(@NonNull Task<Void> task) {
                                                                         if (task.isSuccessful()) {
                                                                             Log.d(TAG, "onComplete: User email address updated.");
-                                                                            Toast.makeText(SettingsActivity.this, "Updated email", Toast.LENGTH_SHORT).show();
+                                                                            Toast.makeText(SettingsActivity.this,
+                                                                                    "Updated email", Toast.LENGTH_SHORT)
+                                                                                    .show();
                                                                             sendVerificationEmail();
                                                                             FirebaseAuth.getInstance().signOut();
                                                                         }else{
@@ -206,16 +283,19 @@ public class SettingsActivity extends AppCompatActivity {
                                             @Override
                                             public void onFailure(@NonNull Exception e) {
                                                 hideDialog();
-                                                Toast.makeText(SettingsActivity.this, "unable to update email", Toast.LENGTH_SHORT).show();
+                                                Toast.makeText(SettingsActivity.this,
+                                                        "unable to update email", Toast.LENGTH_SHORT).show();
                                             }
                                         });
                             }else{
-                                Toast.makeText(SettingsActivity.this, "you must use a company email", Toast.LENGTH_SHORT).show();
+                                Toast.makeText(SettingsActivity.this, "you must use a company email",
+                                        Toast.LENGTH_SHORT).show();
                             }
 
                         }else{
                             Log.d(TAG, "onComplete: Incorrect Password");
-                            Toast.makeText(SettingsActivity.this, "Incorrect Password", Toast.LENGTH_SHORT).show();
+                            Toast.makeText(SettingsActivity.this, "Incorrect Password",
+                                    Toast.LENGTH_SHORT).show();
                             hideDialog();
                         }
 
@@ -225,7 +305,8 @@ public class SettingsActivity extends AppCompatActivity {
                     @Override
                     public void onFailure(@NonNull Exception e) {
                         hideDialog();
-                        Toast.makeText(SettingsActivity.this, "“unable to update email”", Toast.LENGTH_SHORT).show();
+                        Toast.makeText(SettingsActivity.this, "“unable to update email”",
+                                Toast.LENGTH_SHORT).show();
                     }
                 });
     }
@@ -241,10 +322,12 @@ public class SettingsActivity extends AppCompatActivity {
                         @Override
                         public void onComplete(@NonNull Task<Void> task) {
                             if (task.isSuccessful()) {
-                                Toast.makeText(SettingsActivity.this, "Sent Verification Email", Toast.LENGTH_SHORT).show();
+                                Toast.makeText(SettingsActivity.this, "Sent Verification Email",
+                                        Toast.LENGTH_SHORT).show();
                             }
                             else{
-                                Toast.makeText(SettingsActivity.this, "Couldn't Verification Send Email", Toast.LENGTH_SHORT).show();
+                                Toast.makeText(SettingsActivity.this, "Couldn't Verification Send Email",
+                                        Toast.LENGTH_SHORT).show();
                             }
                         }
                     });
