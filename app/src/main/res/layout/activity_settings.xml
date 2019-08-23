@@ -36,7 +36,8 @@
                     android:layout_below="@+id/textHeader"
                     android:layout_marginTop="15dp"
                     android:layout_centerHorizontal="true"
-                    android:scaleType="centerCrop"/>
+                    android:scaleType="centerCrop"
+                    android:src="@drawable/ic_android"/>
 
 
                 <RelativeLayout
