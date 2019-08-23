@@ -35,5 +35,41 @@
     <string name="current_password">Current Password</string>
     <string name="new_password">New Password</string>
     <string name="confirm_new_password">Confirm New Password</string>
+    <string name="first_and_last_name">First and last name</string>
+    <string name="save">Save</string>
+    <string name="change_password">Change Password</string>
+    <string name="primary_phone_contact">Primary phone contact #</string>
+    <string name="chat">Chat</string>
+
+
+    <!-- Intent Extras -->
+    <string name="intent_chatroom">intent_chatroom</string>
+
+
+    <!-- Dialog Names -->
+    <string name="dialog_change_photo">ChangePhotoDialog</string>
+    <string name="dialog_new_chatroom">NewChatroomDialog</string>
+
+
+
+    <!-- Firebase Database Nodes -->
+    <string name="dbnode_users">users</string>
+    <string name="dbnode_chatrooms">chatrooms</string>
+
+
+    <!-- Firebase Database Fields -->
+    <string name="field_chatroom_name">chatroom_name</string>
+    <string name="field_creator_id">creator_id</string>
+    <string name="field_security_level">security_level</string>
+    <string name="field_email">email</string>
+    <string name="field_name">name</string>
+    <string name="field_phone">phone</string>
+    <string name="field_profile_image">profile_image</string>
+    <string name="field_user_id">user_id</string>
+    <string name="field_chatroom_id">chatroom_id</string>
+    <string name="field_chatroom_messages">chatroom_messages</string>
+    <string name="field_message">message</string>
+    <string name="field_timestamp">timestamp</string>
+
 </resources>
 
