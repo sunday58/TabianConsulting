@@ -49,6 +49,7 @@
     <!-- Dialog Names -->
     <string name="dialog_change_photo">ChangePhotoDialog</string>
     <string name="dialog_new_chatroom">NewChatroomDialog</string>
+    <string name="dialog_delete_chatroom">DeleteChatroomDialog</string>
 
 
     <!-- Firebase Database Nodes -->
@@ -70,5 +71,15 @@
     <string name="field_message">message</string>
     <string name="field_timestamp">timestamp</string>
 
+
+    <!-- Strings -->
+    <string name="alert_dialog_delete">DELETE</string>
+    <string name="alert_dialog_cancel">Cancel</string>
+
 </resources>
+
+
+
+
+
 
