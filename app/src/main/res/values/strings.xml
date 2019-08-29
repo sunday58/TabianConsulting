@@ -40,22 +40,37 @@
     <string name="change_password">Change Password</string>
     <string name="primary_phone_contact">Primary phone contact #</string>
     <string name="chat">Chat</string>
-    <string name="field_messaging_token">messaging_token</string>
 
+
+    <!-- FCM Related String -->
+    <string name="default_notification_channel_id" translatable="false">courses.pluralsight.com.tabianconsulting.default_notification_channel_id</string>
+    <string name="default_notification_channel_name" translatable="true">courses.pluralsight.com.tabianconsulting.default_notification_channel_name</string>
+    <string name="data_type_chat_message">data_type_chat_message</string>
+    <string name="data_type_admin_broadcast">data_type_admin_broadcast</string>
+    <string name="data_title">title</string>
+    <string name="data_type">data_type</string>
+    <string name="data_message">message</string>
+    <string name="data_chatroom_id">chatroom_id</string>
+    <string name="reply_label">intent_data_payload</string>
+    <string name="label">new message...</string>
 
     <!-- Intent Extras -->
     <string name="intent_chatroom">intent_chatroom</string>
-
+    <string name="intent_data_payload">intent_data_payload</string>
+    <string name="intent_message">intent_data_payload</string>
 
     <!-- Dialog Names -->
     <string name="dialog_change_photo">ChangePhotoDialog</string>
     <string name="dialog_new_chatroom">NewChatroomDialog</string>
     <string name="dialog_delete_chatroom">DeleteChatroomDialog</string>
+    <string name="dialog_add_department">AddDepartmentDialog</string>
 
 
     <!-- Firebase Database Nodes -->
     <string name="dbnode_users">users</string>
     <string name="dbnode_chatrooms">chatrooms</string>
+    <string name="dbnode_departments">departments</string>
+    <string name="dbnode_server">server</string>
 
 
     <!-- Firebase Database Fields -->
@@ -71,16 +86,20 @@
     <string name="field_chatroom_messages">chatroom_messages</string>
     <string name="field_message">message</string>
     <string name="field_timestamp">timestamp</string>
+    <string name="field_messaging_token">messaging_token</string>
+    <string name="field_department">department</string>
+    <string name="field_server_key">server_key</string>
+    <string name="field_users">users</string>
+    <string name="field_last_message_seen">last_message_seen</string>
 
 
     <!-- Strings -->
     <string name="alert_dialog_delete">DELETE</string>
     <string name="alert_dialog_cancel">Cancel</string>
+    <string name="string_admin">Admin</string>
+
 
 </resources>
-
-
-
 
 
 

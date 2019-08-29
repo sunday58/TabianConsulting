@@ -6,11 +6,13 @@ import android.os.Bundle;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 
+import com.example.android.tabianconsulting.models.User;
 import com.example.android.tabianconsulting.settings.SettingsActivity;
 import com.example.android.tabianconsulting.utils.UniversalImageLoader;
 import com.google.android.gms.tasks.OnCompleteListener;
@@ -18,8 +20,12 @@ import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.auth.UserProfileChangeRequest;
+import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.Query;
+import com.google.firebase.database.ValueEventListener;
 import com.google.firebase.iid.FirebaseInstanceId;
 import com.nostra13.universalimageloader.core.ImageLoader;
 
@@ -31,6 +37,8 @@ public class SignedInActivity extends AppCompatActivity {
     private FirebaseAuth.AuthStateListener mAuthListener;
 
     // widgets and UI References
+    public static boolean isActivityRunning;
+    private Boolean mIsAdmin = false;
 
 
 
@@ -44,6 +52,7 @@ public class SignedInActivity extends AppCompatActivity {
         initImageLoader();
 
 //        getUserDetails();
+        isAdmin();
         setUserDetails();
         initFCM();
     }
@@ -62,6 +71,31 @@ public class SignedInActivity extends AppCompatActivity {
                 .child(getString(R.string.field_messaging_token))
                 .setValue(token);
     }
+
+    private void isAdmin(){
+        DatabaseReference reference = FirebaseDatabase.getInstance().getReference();
+        Query query = reference.child(getString(R.string.dbnode_users))
+                .orderByChild(getString(R.string.field_user_id))
+                .equalTo(FirebaseAuth.getInstance().getCurrentUser().getUid());
+        query.addListenerForSingleValueEvent(new ValueEventListener() {
+            @Override
+            public void onDataChange(DataSnapshot dataSnapshot) {
+                Log.d(TAG, "onDataChange: datasnapshot: " + dataSnapshot);
+                DataSnapshot singleSnapshot = dataSnapshot.getChildren().iterator().next();
+                int securityLevel = Integer.parseInt(singleSnapshot.getValue(User.class).getSecurity_level());
+                if( securityLevel == 10){
+                    Log.d(TAG, "onDataChange: user is an admin.");
+                    mIsAdmin = true;
+                }
+            }
+
+            @Override
+            public void onCancelled(DatabaseError databaseError) {
+
+            }
+        });
+    }
+
 
     private void initImageLoader(){
         UniversalImageLoader imageLoader = new UniversalImageLoader(SignedInActivity.this);
@@ -155,6 +189,13 @@ public class SignedInActivity extends AppCompatActivity {
                 intent = new Intent(SignedInActivity.this, ChatActivity.class);
                 startActivity(intent);
                 return true;
+            case R.id.optionAdmin:
+                if(mIsAdmin){
+                    intent = new Intent(SignedInActivity.this, AdminActivity.class);
+                    startActivity(intent);
+                }else{
+                    Toast.makeText(this, "You're not an Admin", Toast.LENGTH_SHORT).show();
+                }
             default:
                 return super.onOptionsItemSelected(item);
         }
@@ -198,6 +239,7 @@ public class SignedInActivity extends AppCompatActivity {
     public void onStart() {
         super.onStart();
         FirebaseAuth.getInstance().addAuthStateListener(mAuthListener);
+        isActivityRunning = true;
     }
 
     @Override
@@ -206,6 +248,7 @@ public class SignedInActivity extends AppCompatActivity {
         if (mAuthListener != null) {
             FirebaseAuth.getInstance().removeAuthStateListener(mAuthListener);
         }
+        isActivityRunning = false;
     }
 
 

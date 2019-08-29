@@ -43,6 +43,12 @@ dependencies {
 
     //crashlytics
 //    implementation 'com.crashlytics.sdk.android:crashlytics:2.10.1'
+
+    //Retrofit
+    implementation 'com.squareup.retrofit2:retrofit:2.5.0'
+
+    //Retrofit Gson converter
+    implementation 'com.squareup.retrofit2:converter-gson:2.5.0'
 }
 
 apply plugin: 'com.google.gms.google-services'
