@@ -40,6 +40,7 @@
     <string name="change_password">Change Password</string>
     <string name="primary_phone_contact">Primary phone contact #</string>
     <string name="chat">Chat</string>
+    <string name="field_messaging_token">messaging_token</string>
 
 
     <!-- Intent Extras -->

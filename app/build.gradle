@@ -37,6 +37,12 @@ dependencies {
 
     //Design
     implementation 'com.google.android.material:material:1.0.0'
+
+    //cloud messaging
+    implementation 'com.google.firebase:firebase-messaging:20.0.0'
+
+    //crashlytics
+//    implementation 'com.crashlytics.sdk.android:crashlytics:2.10.1'
 }
 
 apply plugin: 'com.google.gms.google-services'
