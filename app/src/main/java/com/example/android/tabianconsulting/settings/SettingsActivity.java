@@ -107,6 +107,7 @@ public class SettingsActivity extends AppCompatActivity implements
     private Bitmap mSelectedImageBitmap;
     private byte[] mBytes;
     private double progress;
+    public static boolean isActivityRunning;
 
 
     @Override
@@ -755,6 +756,7 @@ public class SettingsActivity extends AppCompatActivity implements
     public void onStart() {
         super.onStart();
         FirebaseAuth.getInstance().addAuthStateListener(mAuthListener);
+        isActivityRunning = true;
     }
 
     @Override
@@ -762,6 +764,7 @@ public class SettingsActivity extends AppCompatActivity implements
         super.onStop();
         if (mAuthListener != null) {
             FirebaseAuth.getInstance().removeAuthStateListener(mAuthListener);
+            isActivityRunning = false;
         }
     }
 

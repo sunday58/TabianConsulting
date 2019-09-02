@@ -71,7 +71,7 @@ public class AdminActivity extends AppCompatActivity {
         mAddDepartment = findViewById(R.id.add_department);
         mSendMessage = findViewById(R.id.btn_send_message);
         mRecyclerView = findViewById(R.id.recyclerView);
-        mMessage = findViewById(R.id.input_message);
+        mMessage =  findViewById(R.id.input_message);
         mTitle = findViewById(R.id.input_title);
 
         setupEmployeeList();
@@ -177,24 +177,25 @@ public class AdminActivity extends AppCompatActivity {
     }
 
     private void sendMessageToDepartment(String title, String message){
-        Log.d(TAG, "sendMessageToDepartment: sending message to selected departments");
+        Log.d(TAG, "sendMessageToDepartment: sending message to selected departments.");
 
         Retrofit retrofit = new Retrofit.Builder()
                 .baseUrl(BASE_URL)
                 .addConverterFactory(GsonConverterFactory.create())
                 .build();
 
+        //create the interface
         FCM fcmAPI = retrofit.create(FCM.class);
 
-        //attach headers
+        //attach the headers
         HashMap<String, String> headers = new HashMap<>();
         headers.put("Content-Type", "application/json");
-        headers.put("Authorization", "key="+mServerKey);
+        headers.put("Authorization", "key=" + mServerKey);
 
-        //send the message to all tokens
-        for (String token: mTokens){
+        //send the message to all the tokens
+        for(String token : mTokens){
+
             Log.d(TAG, "sendMessageToDepartment: sending to token: " + token);
-
             Data data = new Data();
             data.setMessage(message);
             data.setTitle(title);
@@ -203,26 +204,24 @@ public class AdminActivity extends AppCompatActivity {
             firebaseCloudMessage.setData(data);
             firebaseCloudMessage.setTo(token);
 
-            //create call object
             Call<ResponseBody> call = fcmAPI.send(headers, firebaseCloudMessage);
 
             call.enqueue(new Callback<ResponseBody>() {
                 @Override
                 public void onResponse(Call<ResponseBody> call, Response<ResponseBody> response) {
-                    Log.d(TAG, "onResponse: Server Response: " + response.toString());
+                    Log.d(TAG, "onResponse: Server Response: "  + response.toString());
 
                 }
 
                 @Override
                 public void onFailure(Call<ResponseBody> call, Throwable t) {
-                    Log.d(TAG, "onFailure: Unable to send the message: " + t.getMessage());
+                    Log.e(TAG, "onFailure: Unable to send the message." + t.getMessage() );
                     Toast.makeText(AdminActivity.this, "error", Toast.LENGTH_SHORT).show();
                 }
             });
         }
+
     }
-
-
 
     /**
      * Retrieves the server key for the Firebase server.
@@ -418,4 +417,3 @@ public class AdminActivity extends AppCompatActivity {
         return string.equals("");
     }
 }
-
